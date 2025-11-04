@@ -13,7 +13,7 @@ interface MovieInfoProps {
 const MovieInfo = ({ label, value }: MovieInfoProps) => (
   <View className="flex-col items-start justify-center mt-5">
     <Text className="text-sm text-light-200 font-normal">{label}</Text>
-    <Text className="text-[14px] text-light-300 leading-5 mt-2 font-bold">
+    <Text className="text-[13.2px] text-light-300 leading-[1.4rem] mt-2 font-bold">
       {value ?? "N/A"}
     </Text>
   </View>
@@ -46,10 +46,11 @@ const MovieDetails = () => {
         <View className="flex-col items-start justify-center mt-5 px-5">
           <Text className="text-white font-bold text-xl">{movie?.title}</Text>
 
-          <View className="flex-row items-center gap-x-1 mt-2">
+          <View className="flex-row items-center gap-x-2 mt-2">
             <Text className="text-sm text-light-200">
               {movie?.release_date?.split("-")[0]}
             </Text>
+            <Text className="text-lg text-light-200">•</Text>
             <Text className="text-sm text-light-200">{movie?.runtime}m</Text>
           </View>
 
@@ -76,10 +77,10 @@ const MovieDetails = () => {
             />
             <MovieInfo
               label="Revenue"
-              value={`$${Math.round(movie?.revenue!) / 1000000} million`}
+              value={`$${Math.round(movie?.revenue! / 1000000)} million`}
             />
           </View>
-          
+
           <MovieInfo label="Tagline" value={movie?.tagline} />
 
           <MovieInfo

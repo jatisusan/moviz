@@ -8,7 +8,7 @@ import useFetch from "@/services/useFetch";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
-const search = () => {
+const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const {
@@ -42,7 +42,7 @@ const search = () => {
     <View className="flex-1 bg-primary">
       <Image
         source={images.bg}
-        className="absolute w-full z-0"
+        className="absolute w-full z-0 top-0"
         resizeMode="cover"
       />
 
@@ -114,4 +114,4 @@ const search = () => {
   );
 };
 
-export default search;
+export default Search;
