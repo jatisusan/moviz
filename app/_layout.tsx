@@ -1,15 +1,17 @@
+import { UserProvider } from "@/context/UserContext";
 import { Stack } from "expo-router";
-import "./globals.css";
 import { StatusBar } from "react-native";
+import "./globals.css";
 
 export default function RootLayout() {
   return (
-    <>
-    <StatusBar hidden={true} />
+    <UserProvider>
+      <StatusBar hidden={true} />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="movies/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
-    </>
+    </UserProvider>
   );
 }
