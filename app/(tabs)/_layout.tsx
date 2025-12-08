@@ -1,5 +1,6 @@
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
+import { useCheckAuth } from "@/services/useUser";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
@@ -26,7 +27,13 @@ const TabIcon = ({ focused, icon, title }: any) => {
   );
 };
 
-const _layout = () => {
+const TabsLayout = () => {
+  const isAuthenticated = useCheckAuth();
+
+  if (isAuthenticated === null) {
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -40,14 +47,14 @@ const _layout = () => {
           borderRadius: 50,
           overflow: "hidden",
           borderWidth: 1,
-          borderColor: '#0F0D23'
+          borderColor: "#0F0D23",
         },
         tabBarItemStyle: {
-          height: '100%',
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }
+          height: "100%",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+        },
       }}
     >
       <Tabs.Screen
@@ -70,16 +77,18 @@ const _layout = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name="saved"
-        options={{
-          title: "Saved",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.save} title="Saved" />
-          ),
-        }}
-      />
+      <Tabs.Protected guard={isAuthenticated}>
+        <Tabs.Screen
+          name="saved"
+          options={{
+            title: "Saved",
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <TabIcon focused={focused} icon={icons.save} title="Saved" />
+            ),
+          }}
+        />
+      </Tabs.Protected>
       <Tabs.Screen
         name="profile"
         options={{
@@ -94,4 +103,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
+export default TabsLayout;

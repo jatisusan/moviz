@@ -10,3 +10,8 @@ export const useUser = () => {
 
   return context;
 };
+
+export const useCheckAuth = () => {
+  const { authChecked, user } = useUser();
+  return authChecked && user !== null;
+}
