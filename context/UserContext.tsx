@@ -6,7 +6,7 @@ interface UserContextType {
   user: Models.User<Models.Preferences> | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
   authChecked: boolean;
 }
 
@@ -30,9 +30,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email: string, password: string, name: string) => {
     try {
-      await account.create({ userId: ID.unique(), email, password });
+      await account.create({ userId: ID.unique(), email, password, name });
       await login(email, password);
     } catch (error) {
       throw Error((error as Error).message);
