@@ -23,7 +23,7 @@ const Profile = () => {
     <View className="flex-1 bg-primary justify-center items-center">
       <Image source={images.bg} className="absolute w-full z-0 top-0" />
 
-      <Text className="text-light-200 text-xl font-bold">Coming soon! </Text>
+      <Text className="text-light-200 text-xl font-bold">{user?.name}</Text>
 
       <TouchableOpacity
         className="bg-light-200 px-4 py-2 rounded"
