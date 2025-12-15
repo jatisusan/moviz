@@ -2,6 +2,7 @@ import { Account, Client, ID, Query, TablesDB } from "react-native-appwrite";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const TABLE_ID = process.env.EXPO_PUBLIC_APPWRITE_TABLE_ID!;
+const SAVED_TABLE_ID = process.env.EXPO_PUBLIC_APPWRITE_SAVED_TABLE_ID!;
 
 const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!) // Your API Endpoint
@@ -93,6 +94,21 @@ export const updateName = async (newName: string) => {
     return await account.updateName({ name: newName });
   } catch (error) {
     console.log("Error updating name:", error);
+    throw error;
+  }
+};
+
+export const getSavedMovies = async (userId: string) => {
+  try {
+    const result = await tablesDB.listRows({
+      databaseId: DATABASE_ID,
+      tableId: SAVED_TABLE_ID,
+      queries: [Query.equal("user_id", userId)],
+    });
+
+    return result.rows as unknown as SavedMovie[];
+  } catch (error) {
+    console.log("Appwrite Error:", error);
     throw error;
   }
 };
