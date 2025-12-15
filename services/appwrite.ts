@@ -50,9 +50,11 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
   }
 };
 
-export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> => {
+export const getTrendingMovies = async (): Promise<
+  TrendingMovie[] | undefined
+> => {
   try {
-     const result = await tablesDB.listRows({
+    const result = await tablesDB.listRows({
       databaseId: DATABASE_ID,
       tableId: TABLE_ID,
       queries: [Query.limit(5), Query.orderDesc("count")],
@@ -63,4 +65,34 @@ export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> 
     console.log("Appwrite Error:", error);
     return undefined;
   }
-}
+};
+
+export const updateEmail = async (newEmail: string, password: string) => {
+  try {
+    return await account.updateEmail({ email: newEmail, password });
+  } catch (error) {
+    console.log("Error updating email:", error);
+    throw error;
+  }
+};
+
+export const updatePassword = async (
+  newPassword: string,
+  oldPassword: string
+) => {
+  try {
+    return await account.updatePassword({ password: newPassword, oldPassword });
+  } catch (error) {
+    console.log("Error updating password:", error);
+    throw error;
+  }
+};
+
+export const updateName = async (newName: string) => {
+  try {
+    return await account.updateName({ name: newName });
+  } catch (error) {
+    console.log("Error updating name:", error);
+    throw error;
+  }
+};

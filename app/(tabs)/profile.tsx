@@ -1,4 +1,5 @@
 import { images } from "@/constants/images";
+import { updateEmail, updateName, updatePassword } from "@/services/appwrite";
 import { useUser } from "@/services/useUser";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -14,19 +15,59 @@ import {
 const Profile = () => {
   const { authChecked, user, logout } = useUser();
 
-  const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const [editName, setEditName] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
   const [editPassword, setEditPassword] = useState(false);
 
-  const handleSubmit = async () => {};
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setError(null);
+    try {
+      if (editName && name !== user?.name) {
+        await updateName(name);
+        setEditName(false);
+      }
+
+      if (editEmail && email !== user?.email) {
+        if (!password) {
+          setError("Please enter your current password to update email.");
+        } else {
+          await updateEmail(email, password);
+          setEditEmail(false);
+          setPassword("");
+        }
+      }
+
+      if (editPassword) {
+        if (!currentPassword || !newPassword) {
+          setError("Please fill in both password fields.");
+          return;
+        }
+        await updatePassword(newPassword, currentPassword);
+        setEditPassword(false);
+        setCurrentPassword("");
+        setNewPassword("");
+      }
+    } catch (error: any) {
+      setError(error?.message || "Failed to update profile.");
+    }
+  };
 
   useEffect(() => {
     if (authChecked && !user) {
       router.replace("/(auth)/login");
+    }
+
+    if (authChecked && user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
     }
   }, [authChecked, user]);
 
@@ -49,15 +90,11 @@ const Profile = () => {
       {/* Header */}
       <View className="items-center mb-10 mt-14">
         <View className="w-24 h-24 rounded-full bg-light-200 justify-center items-center mb-3">
-          <Text className="text-primary text-3xl font-bold">
-            {user?.name?.[0]}
-          </Text>
+          <Text className="text-primary text-3xl font-bold">{name[0]}</Text>
         </View>
 
-        <Text className="text-light-200 text-xl font-bold">
-          Hi, {user?.name}
-        </Text>
-        <Text className="text-light-300 text-sm">{user?.email}</Text>
+        <Text className="text-light-200 text-xl font-bold">Hi, {name}</Text>
+        <Text className="text-light-300 text-sm">{email}</Text>
       </View>
 
       {/* Profile Form */}
@@ -72,7 +109,11 @@ const Profile = () => {
 
         <View className="mb-1 flex flex-row justify-between items-center">
           <Text className="text-light-300 text-sm mb-1">Name</Text>
-          <TouchableOpacity onPress={() => setEditName(!editName)}>
+          <TouchableOpacity
+            onPress={() => {
+              setEditName(!editName);
+            }}
+          >
             <Text className="text-accent text-sm">
               {editName ? "Cancel" : "Edit"}
             </Text>
@@ -88,7 +129,11 @@ const Profile = () => {
 
         <View className="mb-1 flex flex-row justify-between items-center">
           <Text className="text-light-300 text-sm mb-1">Email</Text>
-          <TouchableOpacity onPress={() => setEditEmail(!editEmail)}>
+          <TouchableOpacity
+            onPress={() => {
+              setEditEmail(!editEmail);
+            }}
+          >
             <Text className="text-accent text-sm">
               {editEmail ? "Cancel" : "Edit"}
             </Text>
@@ -104,6 +149,17 @@ const Profile = () => {
           className="bg-dark-100 rounded-lg p-4 mb-3 text-light-200"
         />
 
+        {editEmail && (
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Current Password"
+            secureTextEntry
+            placeholderTextColor="#9CA4AB"
+            className="bg-dark-100 rounded-lg p-4 mb-3 text-light-200"
+          />
+        )}
+
         <View className="mb-1 flex flex-row justify-between items-center">
           <Text className="text-light-300 text-sm mb-1">Password</Text>
           <TouchableOpacity onPress={() => setEditPassword(!editPassword)}>
@@ -115,18 +171,16 @@ const Profile = () => {
         {editPassword ? (
           <>
             <TextInput
-              value={password}
-              onChangeText={setPassword}
-              editable={editPassword}
-              placeholder="New Password"
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              placeholder="Current Password"
               secureTextEntry
               placeholderTextColor="#9CA4AB"
               className="bg-dark-100 rounded-lg p-4 mb-3 text-light-200"
             />
             <TextInput
-              value={password}
-              onChangeText={setPassword}
-              editable={editPassword}
+              value={newPassword}
+              onChangeText={setNewPassword}
               placeholder="New Password"
               secureTextEntry
               placeholderTextColor="#9CA4AB"
@@ -139,11 +193,20 @@ const Profile = () => {
           </Text>
         )}
 
-        <TouchableOpacity className="bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center mt-4 mb-6">
-          <Text className="text-center text-white font-semibold text-base">
-            Save Changes
-          </Text>
-        </TouchableOpacity>
+        {error && (
+          <Text className="text-rose-400 text-center mb-4">{error}</Text>
+        )}
+
+        {(editName || editEmail || editPassword) && (
+          <TouchableOpacity
+            onPress={handleSubmit}
+            className="bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center mt-4 mb-6"
+          >
+            <Text className="text-center text-white font-semibold text-base">
+              Save Changes
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Logout */}
         <TouchableOpacity
