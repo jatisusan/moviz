@@ -49,16 +49,12 @@ const LikeButton = ({
   }
 
   return (
-    <TouchableOpacity onPress={toggleSave}>
-      {updatingLike ? (
-        <ActivityIndicator color="#AB8BFF" />
-      ) : (
-        <Image
-          source={liked ? icons.saved : icons.save}
-          className="size-7"
-          resizeMode="contain"
-        />
-      )}
+    <TouchableOpacity onPress={toggleSave} disabled={updatingLike}>
+      <Image
+        source={liked ? icons.saved : icons.save}
+        className="size-7"
+        resizeMode="contain"
+      />
     </TouchableOpacity>
   );
 };
