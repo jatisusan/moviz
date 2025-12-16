@@ -112,3 +112,49 @@ export const getSavedMovies = async (userId: string) => {
     throw error;
   }
 };
+
+export const checkSavedMovie = async (userId: string, movieId: string) => {
+  try {
+    const result = await tablesDB.listRows({
+      databaseId: DATABASE_ID,
+      tableId: SAVED_TABLE_ID,
+      queries: [
+        Query.equal("user_id", userId),
+        Query.equal("movie_id", movieId),
+      ],
+    });
+
+    return result.rows;
+  } catch (error) {
+    console.log("Appwrite Error:", error);
+    throw error;
+  }
+};
+
+export const updateSavedMovie = async (userId: string, movie: SavedMovie) => {
+  try {
+    const result = await checkSavedMovie(userId, movie.movie_id);
+    if (result.length > 0) {
+      await tablesDB.deleteRow({
+        databaseId: DATABASE_ID,
+        tableId: SAVED_TABLE_ID,
+        rowId: result[0].$id,
+      });
+    } else {
+      await tablesDB.createRow({
+        databaseId: DATABASE_ID,
+        tableId: SAVED_TABLE_ID,
+        rowId: ID.unique(),
+        data: {
+          user_id: userId,
+          movie_id: movie.movie_id,
+          title: movie.title,
+          poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_url}`,
+        },
+      });
+    }
+  } catch (error) {
+    console.log("Appwrite Error:", error);
+    throw error;
+  }
+};

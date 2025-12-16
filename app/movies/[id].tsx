@@ -1,6 +1,8 @@
+import LikeButton from "@/components/LikeButton";
 import { icons } from "@/constants/icons";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
+import { useUser } from "@/services/useUser";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -21,6 +23,8 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
   const { id } = useLocalSearchParams();
+
+  const { user } = useUser();
 
   const {
     data: movie,
@@ -44,14 +48,33 @@ const MovieDetails = () => {
         </View>
 
         <View className="flex-col items-start justify-center mt-5 px-5">
-          <Text className="text-white font-bold text-xl">{movie?.title}</Text>
+          <View className=" flex-row justify-between items-start">
+            <View className="flex-1">
+              <Text className="text-white font-bold text-xl">
+                {movie?.title}
+              </Text>
 
-          <View className="flex-row items-center gap-x-2 mt-2">
-            <Text className="text-sm text-light-200">
-              {movie?.release_date?.split("-")[0]}
-            </Text>
-            <Text className="text-lg text-light-200">•</Text>
-            <Text className="text-sm text-light-200">{movie?.runtime}m</Text>
+              <View className="flex-row items-center gap-x-2 mt-2">
+                <Text className="text-sm text-light-200">
+                  {movie?.release_date?.split("-")[0]}
+                </Text>
+                <Text className="text-lg text-light-200">•</Text>
+                <Text className="text-sm text-light-200">
+                  {movie?.runtime}m
+                </Text>
+              </View>
+            </View>
+
+            {movie && user !== null && (
+              <LikeButton
+                userId={user.$id as string}
+                movie={{
+                  movie_id: movie.id.toString(),
+                  title: movie.title,
+                  poster_url: movie.poster_path,
+                }}
+              />
+            )}
           </View>
 
           <View className="flex-row items-center bg-dark-100 px-2.5 py-2 rounded-md gap-x-1 mt-2">
