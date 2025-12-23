@@ -3,8 +3,8 @@ import { images } from "@/constants/images";
 import { getSavedMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useUser } from "@/services/useUser";
-import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useEffect } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
 const Saved = () => {
@@ -18,10 +18,18 @@ const Saved = () => {
     }
   }, [authChecked, user]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!authChecked || !user) return;
+      refetchMovies();
+    }, [user, authChecked])
+  );
+
   const {
     data: savedMovies,
     loading,
     error,
+    refetch: refetchMovies,
   } = useFetch(() => getSavedMovies(user!.$id), Boolean(authChecked && user));
 
   return (
