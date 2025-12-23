@@ -9,8 +9,8 @@ const SavedMovieCard = ({
   title,
 }: SavedMovie) => {
   return (
-    <Link href={`/movies/${movie_id}`}>
-      <TouchableOpacity>
+    <Link href={`/movies/${movie_id}`} asChild>
+      <TouchableOpacity className="w-[30%]">
         <Image
           source={{
             uri:
